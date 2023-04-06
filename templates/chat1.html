@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<style>
+    a:link {
+        color: #000;
+        text-decoration: none;
+        border-bottom: 1px dotted #222;
+    }
+
+    * {
+        background-clip: padding-box;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #d2d2d2;
+        color: #333;
+        font-size: 16px;
+        line-height: 1.618em;
+        font-family: "Roboto", "Helvetica", sans-serif;
+        overflow-x: hidden;
+    }
+
+    .wrapper {
+        width: 96%;
+        margin: 0 auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: "Roboto Slab", "Roboto", "Helvetica", sans-serif;
+        margin: 0 0 1rem 0;
+        line-height: 2rem;
+    }
+
+    .muted {
+        color: rgba(0, 0, 0, 0.5);
+    }
+
+    .site-head {
+        background-color: #1d7582;
+        color: #fff;
+        padding: 1rem 0;
+    }
+
+    .team-info {
+        background-color: #fff;
+        padding: 1rem 0;
+    }
+
+    .team-info .more {
+        display: block;
+    }
+
+    .team-info .more .expand-block {
+        opacity: 0.35;
+        width: 120px;
+        margin: 0 auto;
+        cursor: pointer;
+        color: #234;
+        text-align: center;
+        font-size: 0.75rem;
+        border-bottom: 1px solid #234;
+        transition: 0.3s all ease-in-out 0s;
+    }
+
+    .team-info .more .expand-block:hover {
+        opacity: 1;
+    }
+
+    .app {
+        background-color: #fcfcfc;
+    }
+
+    .app__tabs {
+        border: 1px solid #dcd1c5;
+        background-color: #fcfcfc;
+        font-family: "Roboto Slab", "Roboto", "Helvetica", sans-serif;
+        font-weight: 600;
+        display: flex;
+    }
+
+    .app__tab {
+        flex-shrink: 1;
+        padding: 1rem 1rem;
+        text-align: center;
+    }
+
+    .app__tab+.app__tab {
+        border-left: 1px solid #efefef;
+    }
+
+    .app__tab h4 {
+        margin: 0;
+    }
+
+    .app__tab.muted {
+        color: rgba(0, 0, 0, 0.25);
+    }
+
+    .app__tab.active,
+    .app__tab.always-active {
+        color: #f37878;
+    }
+
+    .app__tab:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .app__tab:hover.muted {
+        color: #000;
+    }
+
+    .panels {
+        height: 100vh;
+        width: 98vw;
+        display: flex;
+    }
+
+    .panels .panel {
+        height: 100vh;
+        flex-grow: 1;
+        padding-top: 1rem;
+        width: 100%;
+        display: none;
+    }
+
+    .panels .panel.panel--active {
+        display: block;
+        width: 50%;
+    }
+
+    .chat-app {
+        background-color: #2593a3;
+    }
+
+    .conversation {
+        list-style: none;
+        font-size: 1rem;
+        padding: 1em 0;
+        position: relative;
+    }
+
+    .conversation__body {
+        color: #000;
+    }
+
+    .message {
+        display: flex;
+        margin: 1em 0;
+    }
+
+    .message .message__time,
+    .message .message__body,
+    .message .message__author {
+        font-size: 0.85em;
+        padding: 0.5em;
+    }
+
+    .message .message__time,
+    .message .message__author {
+        text-align: left;
+    }
+
+    .message .message__body {
+        display: block;
+        flex-shrink: 1;
+        color: #eee;
+        width: auto;
+        border-radius: 3px;
+    }
+
+    .message .message__body .message__author {
+        color: #fff;
+    }
+
+    .message .message__body .message__body {
+        background-color: #222;
+        color: #444;
+    }
+
+    .message .message__body .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #222 transparent transparent;
+    }
+
+    .message .message__author {
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 0.8em;
+        font-family: "Roboto Slab", "Roboto", "Helvetica", sans-serif;
+        min-width: 90px;
+        color: #fff;
+    }
+
+    .message .message__time {
+        text-align: right;
+        flex-grow: 1;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.6em;
+    }
+
+    .message.person--a .message__author {
+        color: #fff;
+    }
+
+    .message.person--a .message__body {
+        background-color: #ea84b6;
+        color: #444;
+    }
+
+    .message.person--a .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #ea84b6 transparent transparent;
+    }
+
+    .message.person--b .message__author {
+        color: #fff;
+    }
+
+    .message.person--b .message__body {
+        background-color: #77c269;
+        color: #444;
+    }
+
+    .message.person--b .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #77c269 transparent transparent;
+    }
+
+    .message.person--c .message__author {
+        color: #fff;
+    }
+
+    .message.person--c .message__body {
+        background-color: #f37878;
+        color: #444;
+    }
+
+    .message.person--c .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #f37878 transparent transparent;
+    }
+
+    .message.person--d .message__author {
+        color: #fff;
+    }
+
+    .message.person--d .message__body {
+        background-color: #ec8d2d;
+        color: #444;
+    }
+
+    .message.person--d .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #ec8d2d transparent transparent;
+    }
+
+    .message.self .message__author {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .message.self .message__author {
+        color: #fff;
+    }
+
+    .message.self .message__body {
+        background-color: #fff;
+        color: #444;
+    }
+
+    .message.self .message__body:before {
+        content: " ";
+        font-size: 0;
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: -14px;
+        margin-top: 4px;
+        border-width: 8px 10px 8px 0;
+        border-color: transparent #fff transparent transparent;
+    }
+
+    .conversation__messages .messages {
+        list-style: none;
+        padding: 0 0;
+        border-left: 4px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .messaging-editor {
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);
+        width: 50%;
+        display: flex;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        padding: 0.25rem;
+        background-color: #28a2b3;
+        transform: scale(0.8);
+        transition: 0.4s all cubic-bezier(1, 0, 0, 1) 0s;
+    }
+
+    .messaging-editor .message,
+    .messaging-editor .send {
+        margin: 0.5rem 1rem;
+    }
+
+    .messaging-editor .message {
+        flex-grow: 1;
+        opacity: 0.6;
+    }
+
+    .messaging-editor .message input {
+        font-family: "Roboto Slab", "Roboto", "Helvetica", sans-serif;
+        color: #fff;
+        min-width: 80%;
+        margin: auto auto;
+        background-color: transparent;
+        border: none;
+        border-bottom: 4px solid #fff;
+    }
+
+    .messaging-editor .send {
+        border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .messaging-editor .send input {
+        display: block;
+        padding: 0.25rem 1rem;
+        border-radius: 2px;
+        font-family: "Roboto Slab", "Roboto", "Helvetica", sans-serif;
+        background-color: transparent;
+        text-align: center;
+        color: #fff;
+        border: 2px solid transparent;
+    }
+
+    .messaging-editor .send button:hover {
+        text-decoration: underline;
+    }
+
+    .messaging-editor:hover {
+        transform: scale(1);
+        width: 100%;
+    }
+
+    .messaging-editor:hover .message {
+        opacity: 1;
+        transition: 0.3s all ease-in-out 0s;
+    }
+</style>
+<script>
+    console.clear()
+
+    canvas = document.getElementById "whiteboard"
+    canvas.width = window.innerWidth / 2
+    canvas.height = window.innerHeight / 2
+    ctx = canvas.getContext "2d"
+
+    last = null
+
+    $(canvas).on "mousemove", (e) ->
+
+        parentOffset = $(this).parent().offset();
+
+    mouse = {
+        x: ~~(e.pageX - parentOffset.left),
+        y: ~~(e.pageY - parentOffset.top)
+    }
+
+      unless last
+    last = {
+        x: mouse.x
+          y: mouse.y
+    }
+
+    ctx.strokeStyle = "#222"
+    ctx.beginPath()
+    ctx.moveTo(last.x, last.y)
+    ctx.lineTo(mouse.x, mouse.y)
+    ctx.stroke()
+
+    last.x = mouse.x
+    last.y = mouse.y
+</script>
+
+<body>
+    <header class="site-head">
+        <div class="wrapper">
+            <div class="logo">Team <strong>Finder</strong></div>
+            <div class="settings"></div>
+        </div>
+    </header>
+    <div class="content">
+        <div class="panels">
+            <div class="chat-app panel panel--active">
+                <div class="conversation">
+                    <div class="conversation__body">
+                        <div class="conversation__messages">
+                            <div class="wrapper">
+                                <ul class="messages">
+                                    <li class="message person--a">
+                                        <div class="message__author">John</div>
+                                        <div class="message__body">Hi team!</div>
+                                        <div class="message__time">an hour</div>
+                                    </li>
+                                    <li class="message person--b">
+                                        <div class="message__author">Almon</div>
+                                        <div class="message__body">
+                                            Hey John, is Micheal here yet?
+                                        </div>
+                                        <div class="message__time">32 mins</div>
+                                    </li>
+                                    <li class="message person--c">
+                                        <div class="message__author">Micheal</div>
+                                        <div class="message__body">
+                                            Yep, I'm here. Let's get started.
+                                        </div>
+                                        <div class="message__time">17 mins</div>
+                                    </li>
+                                    <li class="message self">
+                                        <div class="message__author">You</div>
+                                        <div class="message__body">
+                                            I'm also here. Let's begin.
+                                        </div>
+                                        <div class="message__time">4 mins</div>
+                                    </li>
+                                    <li class="message person--a">
+                                        <div class="message__author">John</div>
+                                        <div class="message__body">
+                                            OK, check <a href="#">this page out</a>. What do you
+                                            guys think? :)
+                                        </div>
+                                        <div class="message__time">4 mins</div>
+                                    </li>
+                                    <li class="message person--c">
+                                        <div class="message__author">Micheal</div>
+                                        <div class="message__body">
+                                            That's awesome. How did you make the transition?
+                                        </div>
+                                        <div class="message__time">2 mins</div>
+                                    </li>
+                                    <li class="message person--d">
+                                        <div class="message__author">Sharon</div>
+                                        <div class="message__body">Nice job!</div>
+                                        <div class="message__time">1 mins</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="messaging-editor">
+                        <form id="message_input_form">
+                            <div class="message">
+                                <input type="text" id = "message_input_form" placeholder = "Send Message" />
+                            </div>
+                        <div class="send">
+                            <button type="submit">Send</button>
+                        </div>
+                        </div>
+                </div>
+            </div>
+            <div class="panel whiteboard-app">
+                <h4 class="whiteboard-app__title">Whiteboard</h4>
+                <canvas id="whiteboard"></canvas>
+                <div class="whiteboard-app__controls">
+                    <div class="whiteboard-app__control">
+                        <div class="material-icons">brush</div>
+                    </div>
+                    <div class="whiteboard-app__control">
+                        <div class="material-icons">color_lens</div>
+                    </div>
+                    <div class="whiteboard-app__control">
+                        <div class="material-icons">colorize</div>
+                    </div>
+                    <div class="whiteboard-app__control">
+                        <div class="material-icons">image</div>
+                    </div>
+                    <div class="whiteboard-app__control">
+                        <div class="material-icons">aspect_ratio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        const socket = io.connect("http://127.0.0.2:5000");
+
+        socket.on('connect', function () {
+            socket.emit('join_room', {
+                username: "{{ username }}",
+                room: "{{ room }}"
+            });
+            let message_input = document.getElementById('message_input');
+            document.getElementById('message_input_form').onsubmit = function (e) {
+                e.preventDefault();
+                let message = message_input.value.trim();
+                if (message.length) {
+                    // message = message + " OK!"
+
+                    // ========================================================
+                    // Text Scrambling
+
+                    scrambledText = message;
+                    function encrypt(s, k) {                 // changing the original message by converting the characters.
+                        var n = 26;
+                        if (k < 0)
+                            return encrypt(s, k + n);
+                        return s.split('').map(function (c) {
+                            if (c.match(/[a-z]/i)) {
+                                var code = c.charCodeAt();
+                                var shift = code >= 65 && code <= 90 ? 65 : code >= 97 && code <= 122 ? 97 : 0;
+                                return String.fromCharCode(((code - shift + k) % n) + shift);
+                            }
+                            return c;
+                        }).join('');
+                    }
+
+                    function modify(x) {                     // changing the sequence of characters
+                        let encr_str = encrypt(x, x.length % 29);
+                        array = [...encr_str];              // to get array of characters
+                        let i = 0;
+                        while (i < array.length - 1) {      //swapping adjacent elements
+                            let t = array[i];
+                            array[i] = array[i + 1];
+                            array[i + 1] = t;
+                            i = i + 2;
+                        }
+                        return array.join("");
+                    }
+                    scrambledText = modify(scrambledText);
+                    console.log("Scrambled Text :");
+                    console.log(scrambledText);
+
+
+                    // Text Unscrambling
+                    function decrypt(s, k) {
+                        var n = 26;
+                        if (k < 0)
+                            return decrypt(s, k + n);
+                        return s.split('').map(function (c) {
+                            if (c.match(/[a-z]/i)) {
+                                var code = c.charCodeAt();
+                                var shift = code >= 65 && code <= 90 ? 65 : code >= 97 && code <= 122 ? 97 : 0;
+                                return String.fromCharCode(((code - shift + k) % n) + shift);
+                            }
+                            return c;
+                        }).join('');
+                    }
+                    function modify_again(x) {
+                        let encr_str = decrypt(x, - x.length % 29);
+                        array = [...encr_str];
+                        let i = 0;
+                        while (i < script array.length - 1) {
+            let t = array[i];
+            array[i] = array[i + 1];
+            array[i + 1] = t;
+            i = i + 2;
+        }
+        return array.join("");
+                  }
+        scrambledText = modify_again(scrambledText)
+        console.log("Unscrambled Text :")
+        console.log(scrambledText)
+
+        // ========================================================
+        // AES ENCRYPTION
+        console.log('AES Encrypted Cipher :');
+        var textvalue = message;
+        var AESkey = 'AAAAAAAAAAAAAAAA' // Key used to Encrypt the message using AES
+        AESkey = CryptoJS.enc.Utf8.parse(AESkey);
+        var encryptedAES = CryptoJS.AES.encrypt(textvalue, AESkey, { mode: CryptoJS.mode.ECB });
+        console.log(encryptedAES.toString(CryptoJS.enc.Utf8));
+        console.log(encryptedAES.toString());
+        var encryptedAES1 = encryptedAES.toString();
+
+
+        // ========================================================
+        // RSA ENCRYPTION FOR ENCRYPTING THE KEY
+        pubkey = '-----BEGIN PUBLIC KEY----- MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDTSE3PXbkazI+zJtI6HudRsh5Dr1HAnebLlH34A6cuGjmJzo+HQxlZcdoyGl9QqqHDJvzJ0Z436kcRp4tzinvaMPravQkcLcefo+I+ZTNIEG28mT2y6qf9YqlsIiBfPUysenMEV+8tqQrAZZ70T2bDtflG20Cg8fnVi7H5TrHQ3wIDAQAB -----END PUBLIC KEY-----';
+        var publicKey = forge.pki.publicKeyFromPem(pubkey);
+
+        var secretMessage = 'AAAAAAAAAAAAAAAA'; // AES Key will be Encrypted using RSA
+        var encryptedRSA = publicKey.encrypt(secretMessage, "RSA-OAEP", {
+            md: forge.md.sha256.create(),
+            mgf1: forge.mgf1.create()
+        });
+        var base64 = forge.util.encode64(encryptedRSA);
+        console.log('RSA Encrypted Cipher :');
+        console.log(base64);
+        // console.log(encryptedRSA);
+
+        socket.emit('send_message', {
+            username: "{{ username }}",
+            room: "{{ room }}",
+            message: '',
+            encAES: encryptedAES1,
+            encRSA: base64
+        })
+              }
+        console.log("Sending to Server!")
+        // console.log(message)
+        message_input.value = '';
+        message_input.focus();
+          }
+      });
+
+        socket.on('receive_message', function (data) {
+            console.log("Received from Server!")
+            console.log(data);
+            const newNode = document.createElement('div');
+            { #newNode.innerHTML = `<b>${data.username}&nbsp;[${data.created_at}]:&nbsp;</b> ${data.message}`;# }
+            newNode.innerHTML = `<b>${data.username}&nbsp;</b> : ${data.message}`;
+
+            // For chat message box length
+            let len = data['message'].length;
+            let len2 = Math.round(len * 1.5);
+            if (len2 > 80) {
+                len2 = 75;
+            }
+            len2 = len2.toString();
+            len2 = len2 + "%";
+            // console.log(typeof len2);
+
+            newNode.style.width = len2;
+            document.getElementById('messages').appendChild(newNode);
+        });
+
+        socket.on('join_room_announcement', function (data) {
+            console.log(data);
+            const newNode = document.createElement('div');
+            newNode.innerHTML = `<b>${data.username}</b> has joined the chat!`;
+            newNode.style.margin = "auto";
+            newNode.style.width = "30%";
+            newNode.style.margin = "2px auto 2px auto";
+            document.getElementById('messages').appendChild(newNode);
+        });
+    </script>
+</body>
+
+</html>
