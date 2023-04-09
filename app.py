@@ -1,6 +1,6 @@
 # For FLASK and Socket Programming
-from flask import Flask, render_template, request, redirect, url_for
-from flask_socketio import SocketIO, join_room, leave_room
+from flask import Flask, render_template, request, session, redirect, url_for
+from flask_socketio import SocketIO, join_room, leave_room, emit
 
 # FOR AES
 import base64
@@ -20,6 +20,8 @@ import random
 
 # FOR IMAGE ENCRYPTION
 import cv2
+# from openface import align, align_dlib, TorchNeuralNet, utilities
+import face_recognition
 import math
 import numpy as np
 
@@ -63,58 +65,24 @@ def dhalgo(skey, pkey, prime, check):
         ka = int(pow(key1, a, P))
         return key1
 
-def chaotic_map(str):
-    r = 3.99
-    xe1 = random.random()
-    xe2 = random.random()
-    ciphertext3 = []
-    ciphertext2 = []
-    map2 = []
-    for i in range(len(str)):
-        xe1 = r*xe1*(1-xe1)
-        str1 = format(int(xe1*(2**32)), '032b')
-        a = np.bitwise_xor(ord(str[i]), int(100*xe1))
-        ciphertext3.append(chr(a))
-        xe2 = r*xe2*(1-xe2)
-        b = np.bitwise_xor(a, int(100*xe2))
-        ciphertext2.append(chr(b))
 
-    ciphertext3 = ''.join(ciphertext3)
-    ciphertext2 = ''.join(ciphertext2)
-    return ciphertext2
+# def biometric():
+#     camera = cv2.VideoCapture(0)
+#     _, image = camera.read()
 
-def lorenz(x, y, z, s, r, b):
-    """
-    Implementation of the Lorenz system, which is a chaotic system.
-    """
-    x_dot = s * (y - x)
-    y_dot = r * x - y - x * z
-    z_dot = x * y - b * z
-    return x_dot, y_dot, z_dot
+# # Load the trained face recognition model
+#     align = align_dlib.AlignDlib("shape_predictor_68_face_landmarks.dat")
+#     net = TorchNeuralNet("openface.nn4.small2.v1.t7")
+    
+#     # Load the image and preprocess it for face recognition
+#     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#     aligned_face = align.align(96, rgb_image, align.getLargestFaceBoundingBox(rgb_image), landmarkIndices=align.OUTER_EYES_AND_NOSE)
+#     preprocessed_face = (aligned_face / 255.0 - 0.5) * 2
 
-def generate_key(key_length):
-    """
-    Generates a pseudo-random key of the specified length using the Lorenz system with random parameter values.
-    """
-    x, y, z = 0, 1, 1.05  # initial values for the Lorenz system
-    s, r, b = np.random.uniform(0, 50), np.random.uniform(10, 50), np.random.uniform(0, 10/3) # random values for s, r, and b
-    key = np.zeros(key_length)
-    for i in range(key_length):
-        x_dot, y_dot, z_dot = lorenz(x, y, z, s, r, b)
-        x, y, z = x + x_dot * 0.01, y + y_dot * 0.01, z + z_dot * 0.01
-        key[i] = abs(int(255 * (x - np.floor(x))))  # converts chaotic values to integers between 0 and 255
-    return key.astype(int)
-
-def encrypt_message(plaintext, key):
-    """
-    Encrypts the plaintext message using the generated key.
-    """
-    encrypted = ""
-    for i in range(len(plaintext)):
-        encrypted += chr(ord(plaintext[i]) ^ key[i % len(key)])
-    return encrypted
-
-# example usage
+#     # Use the model to recognize the face
+#     embeddings = net.forward(preprocessed_face[np.newaxis])
+    
+# # example usage
 # plaintext = "Hello"
 # key_length = len(plaintext)
 # key = generate_key(key_length)
@@ -313,6 +281,180 @@ def imageDecryption(EncryptionImg, j0, g0, x0, DecryptionImg):
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+# Load the trained face recognition model and the user embeddings
+
+
+
+# Load the image and extract the face location and encoding
+# image = face_recognition.load_image_file("path/to/image.jpg")
+# face_locations = face_recognition.face_locations(image)
+# face_encodings = face_recognition.face_encodings(image, face_locations)
+
+# # Print the face encoding
+# print(face_encodings[0])
+
+# face_model = cv2.face.LBPHFaceRecognizer_create()
+# face_model.read('face_model.yml')
+# user_embeddings = np.load('user_embeddings.npy')
+
+# # Create a list of embeddings
+# embeddings = [face_encodings[0], face_encodings[1], ...]
+
+# # Convert the list to a NumPy array
+# embeddings_array = np.array(embeddings)
+
+# # Save the array to a file
+# np.save("embeddings.npy", embeddings_array)
+
+# @app.route('/')
+# def index():
+#     if 'username' in session:
+#         return render_template('chat.html')
+#     else:
+#         return redirect('/login')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Capture an image from the user's webcam or upload a photo
+        image_data = request.files['image'].read()
+        nparr = np.fromstring(image_data, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        # Preprocess the image and extract the face embeddings
+        face = preprocess_image(image)
+        embeddings = get_embeddings(face)
+
+        # Compare the user's embeddings to the known user embeddings
+        distances = pairwise_distances(embeddings, user_embeddings)
+        min_distance = np.min(distances)
+
+        if min_distance < 0.75:
+            # If the user is recognized, add the username to the session and redirect to the chat room
+            username = get_username(distances)
+            session['username'] = username
+            return redirect('/')
+        else:
+            return render_template('index.html', error='Face not recognized')
+    else:
+        return render_template('index.html')
+# def login():
+    
+#     if request.method == 'POST':
+#         # Capture an image from the user's webcam or upload a photo
+#         image_data = request.files['image'].read()
+#         nparr = np.fromstring(image_data, np.uint8)
+#         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+#         training_set = {
+#             "person1": ["path/to/face1.jpg", "path/to/face2.jpg"],
+#             "person2": ["path/to/face3.jpg", "path/to/face4.jpg", "path/to/face5.jpg"]
+#         }
+
+#         training_set_embeddings = []
+#         for person, face_paths in training_set.items():
+#             for face_path in face_paths:
+#                 image = cv2.imread(face_path)
+#                 rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#                 aligned_face = align.align(96, rgb_image, align.getLargestFaceBoundingBox(rgb_image), landmarkIndices=align.OUTER_EYES_AND_NOSE)
+#                 preprocessed_face = (aligned_face / 255.0 - 0.5) * 2
+#                 embeddings = net.forward(preprocessed_face[np.newaxis])
+#                 training_set_embeddings.append(embeddings)
+        
+#             training_set_embeddings = np.vstack(training_set_embeddings)
+#             distances = utilities.pairwiseDistance(embeddings, training_set_embeddings)
+#             min_distance = np.min(distances)
+#             min_distance_index = np.argmin(distances)
+
+#         distances = utilities.pairwiseDistance(embeddings, training_set_embeddings)
+#         min_distance = np.min(distances)
+#         min_distance_index = np.argmin(distances)
+#         recognized_user_name = list(training_set.keys())[min_distance_index]
+#         socketio.emit('user_recognized', {
+#         'name': recognized_user_name,
+#         'message': json['message']
+#     })
+
+#         # Preprocess the image and extract the face embeddings
+#         face = preprocess_image(image)
+#         embeddings = get_embeddings(face)
+
+#         # Compare the user's embeddings to the known user embeddings
+#         distances = pairwise_distances(embeddings, user_embeddings)
+#         min_distance = np.min(distances)
+
+#         if min_distance < THRESHOLD:
+#             # If the user is recognized, add the username to the session and redirect to the chat room
+#             username = get_username(distances)
+#             session['username'] = username
+#             return redirect('/')
+#         else:
+#             return render_template('login.html', error='Face not recognized')
+#     else:
+#         return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('/login')
+
+def preprocess_image(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces in the image using the Haar Cascade classifier
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
+
+    # If no faces are detected, return None
+    if len(faces) == 0:
+        return None
+
+    # Crop the first face detected and resize it to a fixed size
+    (x, y, w, h) = faces[0]
+    face = cv2.resize(gray[y:y+h, x:x+w], (160, 160))
+
+    # Return the preprocessed face
+    # TODO: implement image preprocessing
+    return face
+
+def get_embeddings(face):
+    model = cv2.dnn.readNetFromTensorflow('facenet.pb')
+
+    # Preprocess the face and normalize the pixel values
+    face = cv2.dnn.blobFromImage(face, 1.0/255, (160, 160), [0,0,0], swapRB=True, crop=False)
+
+    # Set the input and output blobs for the model
+    model.setInput(face)
+    embeddings = model.forward()
+
+    # Reshape the embeddings to a 1D array
+    embeddings = embeddings.flatten()
+    # TODO: implement face embedding extraction
+    return embeddings
+
+def pairwise_distances(embeddings, user_embeddings):
+    distances = np.linalg.norm(embeddings - user_embeddings, axis=1)
+
+    # TODO: implement pairwise distance calculation
+    return distances
+
+def get_username(distances):
+        
+    THRESHOLD = 0.75
+    users = np.load('users.npy', allow_pickle=True).item()
+    
+    # Find the index of the user with the smallest distance
+    index = np.argmin(distances)
+    
+    # Get the username associated with the smallest distance
+    username = users[index]
+
+   # If the smallest distance is greater than a threshold, return None
+    if distances[index] > THRESHOLD:
+       return None
+
+    # TODO: implement username retrieval based on distances
+    return username
 @app.route('/')
 def home():
     return render_template("index.html")
@@ -322,7 +464,7 @@ def home():
 def chat():
     username = request.args.get('username')
     room = request.args.get('room')
-    return render_template('chat1.html', username=username, room=room)
+    return render_template('chat.html', username=username, room=room)
 
 
 @socketio.on('send_message')

@@ -385,7 +385,7 @@
         border-left: 1px solid rgba(0, 0, 0, 0.15);
     }
 
-    .messaging-editor .send input {
+    .messaging-editor .send button {
         display: block;
         padding: 0.25rem 1rem;
         border-radius: 2px;
@@ -413,14 +413,14 @@
 <script>
     console.clear()
 
-    canvas = document.getElementById "whiteboard"
+    canvas = document.getElementById("whiteboard")
     canvas.width = window.innerWidth / 2
     canvas.height = window.innerHeight / 2
-    ctx = canvas.getContext "2d"
+    ctx = canvas.getContext("2d")
 
     last = null
 
-    $(canvas).on "mousemove", (e) ->
+    $(canvas).on("mousemove"), (e) ->
 
         parentOffset = $(this).parent().offset();
 
@@ -466,45 +466,13 @@
                                         <div class="message__time">an hour</div>
                                     </li>
                                     <li class="message person--b">
-                                        <div class="message__author">Almon</div>
-                                        <div class="message__body">
-                                            Hey John, is Micheal here yet?
-                                        </div>
-                                        <div class="message__time">32 mins</div>
+
                                     </li>
                                     <li class="message person--c">
-                                        <div class="message__author">Micheal</div>
-                                        <div class="message__body">
-                                            Yep, I'm here. Let's get started.
-                                        </div>
-                                        <div class="message__time">17 mins</div>
+
                                     </li>
                                     <li class="message self">
-                                        <div class="message__author">You</div>
-                                        <div class="message__body">
-                                            I'm also here. Let's begin.
-                                        </div>
-                                        <div class="message__time">4 mins</div>
-                                    </li>
-                                    <li class="message person--a">
-                                        <div class="message__author">John</div>
-                                        <div class="message__body">
-                                            OK, check <a href="#">this page out</a>. What do you
-                                            guys think? :)
-                                        </div>
-                                        <div class="message__time">4 mins</div>
-                                    </li>
-                                    <li class="message person--c">
-                                        <div class="message__author">Micheal</div>
-                                        <div class="message__body">
-                                            That's awesome. How did you make the transition?
-                                        </div>
-                                        <div class="message__time">2 mins</div>
-                                    </li>
-                                    <li class="message person--d">
-                                        <div class="message__author">Sharon</div>
-                                        <div class="message__body">Nice job!</div>
-                                        <div class="message__time">1 mins</div>
+
                                     </li>
                                 </ul>
                             </div>
@@ -513,12 +481,12 @@
                     <div class="messaging-editor">
                         <form id="message_input_form">
                             <div class="message">
-                                <input type="text" id = "message_input_form" placeholder = "Send Message" />
+                                <input type="text" id="message_input_form" placeholder="Send Message" />
                             </div>
-                        <div class="send">
-                            <button type="submit">Send</button>
-                        </div>
-                        </div>
+                            <div class="send">
+                                <button type="submit">Send</button>
+                            </div>
+                    </div>
                 </div>
             </div>
             <div class="panel whiteboard-app">
@@ -550,6 +518,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+    <script src = "https://use.fontawesome.com/releases/v5.7.2/css/all.css">
     <script>
         const socket = io.connect("http://127.0.0.2:5000");
 
